@@ -34,7 +34,7 @@ namespace PhoneBook.Models
             }
         }
 
-        private bool Validate()
+        public bool Validate()
         {
             if (string.IsNullOrWhiteSpace(Name))
                 return false;

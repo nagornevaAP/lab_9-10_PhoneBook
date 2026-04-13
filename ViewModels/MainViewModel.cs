@@ -47,16 +47,24 @@ namespace PhoneBook.ViewModels
         private void AddContact()
         {
             var contact = new Contact(Name, Phone);
-            Contacts.Add(contact);
 
-            Name = string.Empty;
-            Phone = string.Empty;
+            if (contact.Validate()) 
+            {
+                Contacts.Add(contact);
+                Name = string.Empty;
+                Phone = string.Empty;
+            }
         }
+
 
         private bool CanAddContact()
         {
-            return !string.IsNullOrWhiteSpace(Name) && !string.IsNullOrWhiteSpace(Phone);
+            if (string.IsNullOrWhiteSpace(Name) || string.IsNullOrWhiteSpace(Phone))
+                return false;
+            var tempContact = new Contact(Name, Phone);
+            return tempContact.Validate(); 
         }
+
 
         private void DeleteContact(Contact contact)
         {
