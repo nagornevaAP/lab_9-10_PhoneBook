@@ -8,7 +8,6 @@ namespace PhoneBook
         public MainWindow()
         {
             InitializeComponent();
-            DataContext = new MainViewModel();
         }
     }
 }

@@ -1,11 +1,16 @@
-﻿using System.Collections.ObjectModel;
+﻿using PhoneBook.Models;
+using PhoneBook.Services;
+using System;
+using System.Collections.ObjectModel;
+using System.Linq;
 using System.Windows.Input;
-using PhoneBook.Models;
 
 namespace PhoneBook.ViewModels
 {
     public class MainViewModel : ObservableObject
     {
+        private readonly IDialogService _dialogService;
+
         public ObservableCollection<Contact> Contacts { get; }
 
         private string _name = string.Empty;
@@ -26,18 +31,16 @@ namespace PhoneBook.ViewModels
         public Contact SelectedContact
         {
             get => _selectedContact;
-            set
-            {
-                Set(ref _selectedContact, value);
-                (DeleteCommand as RelayCommand<Contact>)?.RaiseCanExecuteChanged();
-            }
+            set => Set(ref _selectedContact, value);
         }
 
         public ICommand AddCommand { get; }
         public ICommand DeleteCommand { get; }
 
-        public MainViewModel()
+        public MainViewModel(IDialogService dialogService)
         {
+            _dialogService = dialogService ?? throw new ArgumentNullException(nameof(dialogService));
+
             Contacts = new ObservableCollection<Contact>();
 
             AddCommand = new RelayCommand(AddContact, CanAddContact);
@@ -46,30 +49,47 @@ namespace PhoneBook.ViewModels
 
         private void AddContact()
         {
+            if (Contacts.Any(c => c.Phone == Phone))
+            {
+                _dialogService.ShowWarning(
+                "Контакт с таким номером телефона уже существует!",
+                "Дубликат");
+                return;
+            }
+
             var contact = new Contact(Name, Phone);
 
-            if (contact.Validate()) 
+            if (contact.Validate())
             {
                 Contacts.Add(contact);
+
+                _dialogService.ShowInfo(
+                $"Контакт '{Name}' успешно добавлен!",
+                "Успех");
+
+
                 Name = string.Empty;
                 Phone = string.Empty;
             }
         }
 
-
         private bool CanAddContact()
         {
-            if (string.IsNullOrWhiteSpace(Name) || string.IsNullOrWhiteSpace(Phone))
-                return false;
-            var tempContact = new Contact(Name, Phone);
-            return tempContact.Validate(); 
+            return !string.IsNullOrWhiteSpace(Name) && !string.IsNullOrWhiteSpace(Phone);
         }
-
 
         private void DeleteContact(Contact contact)
         {
-            if (contact != null)
+            if (contact == null) return;
+
+            bool confirmed = _dialogService.ShowConfirmation(
+            $"Вы действительно хотите удалить контакт '{contact.Name}'?",
+            "Подтверждение удаления");
+
+            if (confirmed)
+            {
                 Contacts.Remove(contact);
+            }
         }
 
         private bool CanDeleteContact(Contact contact)
