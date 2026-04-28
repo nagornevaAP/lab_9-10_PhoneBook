@@ -1,4 +1,5 @@
-﻿using System.Windows;
+﻿using System;
+using System.Windows;
 using Microsoft.Extensions.DependencyInjection;
 using PhoneBook.Services;
 using PhoneBook.ViewModels;
@@ -10,20 +11,27 @@ namespace PhoneBook
         protected override void OnStartup(StartupEventArgs e)
         {
             base.OnStartup(e);
-            var services = new ServiceCollection();
-            services.AddSingleton<IDialogService, DialogService>(); 
-            services.AddTransient<MainViewModel>(); 
 
-            services.AddSingleton<MainWindow>(sp =>
-            {
-                var window = new MainWindow();
-                window.DataContext = sp.GetRequiredService<MainViewModel>();
-                return window;
-            });
+            var services = new ServiceCollection();
+
+            // Сервисы
+            services.AddSingleton<INavigationService, NavigationService>();
+            services.AddSingleton<IDialogService, DialogService>();
+
+            // ViewModels
+            services.AddTransient<ContactsListViewModel>();
+            services.AddTransient<ContactEditViewModel>();
+            services.AddTransient<AboutViewModel>();
+            services.AddSingleton<MainWindowViewModel>();
+
+            // Главное окно
+            services.AddSingleton<MainWindow>();
 
             var serviceProvider = services.BuildServiceProvider();
 
+            // Запуск
             var mainWindow = serviceProvider.GetRequiredService<MainWindow>();
+            mainWindow.DataContext = serviceProvider.GetRequiredService<MainWindowViewModel>();
             mainWindow.Show();
         }
     }

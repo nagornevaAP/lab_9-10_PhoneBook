@@ -1,5 +1,4 @@
 ﻿using System.Windows;
-using PhoneBook.ViewModels;
 
 namespace PhoneBook
 {

@@ -3,31 +3,29 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:PhoneBook"
         mc:Ignorable="d"
-        Title="Телефонная книга" Height="450" Width="600">
-    <Grid Margin="10">
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="*"/>
-        </Grid.RowDefinitions>
+        Title="Телефонная книга"
+        Height="500"
+        Width="800"
+        WindowStartupLocation="CenterScreen">
 
-        <TextBox Grid.Row="0" Margin="0,5" Height="30" Text="{Binding Name, UpdateSourceTrigger=PropertyChanged}"/>
+    <DockPanel>
 
-        <TextBox Grid.Row="1" Margin="0,5" Height="30" Text="{Binding Phone, UpdateSourceTrigger=PropertyChanged}"/>
+        <StackPanel DockPanel.Dock="Top"
+Orientation="Horizontal"
+Background="#F0F0F0"
+Margin="5">
 
-        <StackPanel Grid.Row="2" Orientation="Horizontal" Margin="0,10">
-            <Button Content="Добавить" Width="120" Height="35" Margin="0,0,10,0" Command="{Binding AddCommand}"/>
-            <Button Content="Удалить" Width="120" Height="35" Command="{Binding DeleteCommand}" CommandParameter="{Binding SelectedContact}"/>
+            <Button Content="Контакты"
+Command="{Binding ShowContactsCommand}"
+Margin="5" Padding="12,6" FontSize="14"/>
+
+            <Button Content="О программе"
+Command="{Binding ShowAboutCommand}"
+Margin="5" Padding="12,6" FontSize="14"/>
         </StackPanel>
 
-        <DataGrid Grid.Row="3" AutoGenerateColumns="False" IsReadOnly="True" ItemsSource="{Binding Contacts}" SelectedItem="{Binding SelectedContact}">
-            <DataGrid.Columns>
-                <DataGridTextColumn Header="Имя" Binding="{Binding Name}" Width="200"/>
-                <DataGridTextColumn Header="Телефон" Binding="{Binding Phone}" Width="*"/>
-            </DataGrid.Columns>
-        </DataGrid>
-    </Grid>
+        <ContentControl Content="{Binding NavigationService.CurrentViewModel}" Margin="10"/>
+    </DockPanel>
 </Window>
+
